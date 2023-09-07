@@ -4,6 +4,8 @@ import PySimpleGUI as sg
 pygame.init()
 
 import windows as wd
+import checkers
+import create_objs
 
 import objetos as objs
 import viewport as vp
@@ -41,8 +43,8 @@ objs.displayfile.append(
 # ------ #
 
 
-painel = wd.windows_control.window_control(objs.displayfile)
-adicionar = None
+painel: sg.Window = wd.window_control.create(objs.displayfile)
+adicionar: sg.Window = None
 
 while True:
     for event in pygame.event.get():
@@ -63,13 +65,19 @@ while True:
 
     janela, event, value = sg.read_all_windows(timeout=clock.tick(60))
 
+    if event == '__TIMEOUT__':
+        continue
+
+    # Painel: Window
     if janela == painel:
-        if event == sg.WIN_CLOSED:
-            pygame.quit()
-            painel.close()
-            quit()
+        action = wd.window_control.read(painel, event, value)
     
-        match event:
+        match action:
+            case 'quit':
+                pygame.quit()
+                painel.close()
+                quit()
+
             case 'move-right':
                 window.move(0.5, 0)
             case 'move-left':
@@ -84,38 +92,26 @@ while True:
             case 'zoom-':
                 window.zoom(1.25)
         
-        if event == '-criar-':
-            adicionar = wd.windows_control.window_adicionar()
+            case 'criar':
+                adicionar = wd.window_adicionar.create()
         
     
-
+    # Adicionar: Window
     if janela == adicionar:
-        if event == sg.WIN_CLOSED:
-            adicionar.close()
-        
-        if event == '-OK-':
-            if adicionar['-TAB-TIPO-'].get() == '-RETA-':
-                nome = adicionar['-NOME-'].get()
+        print(janela)
+        action = wd.window_adicionar.read(adicionar, event, value)
 
-                xini = adicionar['-XINI-'].get()
-                yini = adicionar['-YINI-'].get()
-                xfim = adicionar['-XFIM-'].get()
-                yfim = adicionar['-YFIM-'].get()
+        match action:
+            case 'close':
+                adicionar.close()
+            
+            case 'create-reta':
+                if reta := create_objs.create_reta(adicionar):
+                    objs.displayfile.append(reta)
 
-                if not nome or not xini or not yini or not xfim or not yfim:
-                    print('Preencha os campos')
-                    continue
+                adicionar.close()
 
-                for obj in objs.displayfile:
-                    if nome == obj.nome:
-                        print('Nome já existente')
-                
-                pt_ini = objs.Ponto(int(xini), int(yini))
-                pt_fim = objs.Ponto(int(xfim), int(yfim))
 
-                objs.displayfile.append(
-                    objs.Reta(nome, pt_ini, pt_fim)
-                )
-    
-            obj_names = [obj.nome for obj in objs.displayfile]
-            painel['-LIST-OBJS-'].update(values=obj_names)
+        wd.window_control.update(
+            painel, list_objs=[obj.nome for obj in objs.displayfile]
+        )
