@@ -43,6 +43,15 @@ class Viewport:
         return (1 - (y - self.window.y) / (self.window.height)) * self.height
     
 
+    def transform_mouse(self, x, y):
+        mx = x / self.width * self.window.width + self.window.x
+        my = (1 - y / self.height) * self.window.height + self.window.y
+
+        mx, my = round(mx, 3), round(my, 3)
+
+        return objs.Ponto(mx, my)
+    
+
     def clean(self):
         self.display.fill((225, 225, 225))
 
