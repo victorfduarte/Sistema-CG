@@ -27,6 +27,9 @@ class Ponto:
         self.y = y
 
         self.coordinate = x, y
+
+    def __sub__(self, other):
+        return Ponto(self.x - other.x, self.y - other.y)
     
     def __getitem__(self, value):
         return self.coordinate[value]

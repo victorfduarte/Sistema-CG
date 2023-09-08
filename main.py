@@ -8,6 +8,7 @@ import create_objs
 
 import objetos as objs
 import viewport as vp
+import ferramentas as tools
 
 
 window = objs.Window(1.27, 0.67, 5.27, 3.67)
@@ -15,7 +16,7 @@ viewport = vp.Viewport(window)
 
 mouse_point = objs.Ponto(0, 0)
 
-
+wdcontroller = tools.window.WindowController(window, viewport)
 
 clock = pygame.time.Clock()
 
@@ -58,16 +59,12 @@ while True:
             quit()
         
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_point = viewport.transform_mouse(*event.pos)
-
-            if event.button == 1:
-                objs.displayfile.add(
-                    objs.Reta(
-                        'reta',
-                        objs.Ponto(0, 0),
-                        mouse_point
-                    )
-                )
+           wdcontroller.mouse_clicked(event.button, *event.pos)
+        
+        if event.type == pygame.MOUSEBUTTONUP:
+           wdcontroller.mouse_released(event.button, *event.pos)
+    
+    wdcontroller.update()
 
         
     viewport.clean()
