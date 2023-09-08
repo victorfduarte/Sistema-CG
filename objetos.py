@@ -5,8 +5,12 @@ class Window:
     def __init__(self, xmin, ymin, xmax, ymax):
         self.x = xmin
         self.y = ymin
+
         self.width = xmax - xmin
         self.height = ymax - ymin
+
+        self.original_size = self.width, self.height
+        self.izoom = 1
     
 
     def move(self, x: float, y: float):
@@ -15,9 +19,10 @@ class Window:
         self.y += y
     
 
-    def zoom(self, prop: int):
-        self.width *= prop
-        self.height *= prop
+    def zoom(self, prop: float):
+        self.izoom = round(self.izoom * prop, 2)
+        self.width  = self.original_size[0] / self.izoom
+        self.height = self.original_size[1] / self.izoom
 
 
 

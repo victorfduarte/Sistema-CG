@@ -11,7 +11,7 @@ import viewport as vp
 import ferramentas as tools
 
 
-window = objs.Window(1.27, 0.67, 5.27, 3.67)
+window = objs.Window(-10, -10, 30, 20)
 viewport = vp.Viewport(window)
 
 mouse_point = objs.Ponto(0, 0)
@@ -48,6 +48,7 @@ objs.displayfile.add(
 
 
 painel: sg.Window = wd.window_control.create(objs.displayfile)
+proriedades: sg.Window = wd.window_propriedades.create(window)
 adicionar: sg.Window = None
 
 while True:
@@ -83,6 +84,8 @@ while True:
             wd.window_control.update(
                 list_objs=[obj.nome for obj in objs.displayfile]
             )
+        
+        wd.window_propriedades.update(window)
 
         continue
 
@@ -106,12 +109,21 @@ while True:
                 window.move(0, -0.5)
 
             case 'zoom+':
-                window.zoom(0.75)
+                window.zoom(1.15)
             case 'zoom-':
-                window.zoom(1.25)
+                window.zoom(0.85)
         
             case 'criar':
                 adicionar = wd.window_adicionar.create()
+    
+
+    if janela == proriedades:
+        action = wd.window_propriedades.read(event, value)
+
+        if action == 'close':
+            pygame.quit()
+            proriedades.close()
+            quit()
         
     
     # Adicionar: Window

@@ -18,6 +18,12 @@ class WindowController:
             self.mouse_state = True
             self.mouse = self.viewport.transform_mouse(x, y)
         
+        if button == 4:
+            self.window.zoom(1.15)
+        
+        if button == 5:
+            self.window.zoom(0.85)
+        
 
     def mouse_released(self, button, x, y):
         if button == 1:
