@@ -33,6 +33,9 @@ class Ponto:
     
     def __len__(self):
         return 2
+    
+    def __repr__(self):
+        return f'<Ponto(x={self.x}, y={self.y})>'
 
 
 
@@ -72,4 +75,30 @@ class Poligono(Objeto):
         pygame.draw.polygon(screen, (0,0,0), pontos, width=1)
 
 
-displayfile: 'list[Objeto]' = []
+
+class DisplayFile:
+    def __init__(self):
+        self.objects: 'list[Objeto]' = []
+        self.status = 'NONE'    # NONE, UPDATED
+    
+
+    def get_status(self):
+        status = self.status
+        self.status = 'NONE'
+        return status
+    
+
+    def add(self, obj: Objeto):
+        self.objects.append(obj)
+        self.status = 'UPDATED'
+
+
+    def __getitem__(self, value):
+        return self.objects[value]
+    
+    def __len__(self):
+        return len(self.objects)
+
+
+
+displayfile = DisplayFile()

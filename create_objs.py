@@ -1,34 +1,15 @@
 import PySimpleGUI as sg
-import checkers
 import objetos as objs
 
 
-def create_reta(window: sg.Window):
-    if checkers.is_all_empty(
-            window['-NOME-'].get(), window['-XINI-'].get(),
-            window['-YINI-'].get(), window['-XFIM-'].get(),
-            window['-YFIM-'].get(),
-    ):
-        return None
-
-    nome = window['-NOME-'].get()
+def create_reta(data: dict):
+    nome = data['name']
 
     if nome in (obj.nome for obj in objs.displayfile):
         return None
 
-    if not checkers.is_all_numeric(
-            window['-XINI-'].get(), window['-YINI-'].get(), 
-            window['-XFIM-'].get(), window['-YFIM-'].get()
-    ):
-        return None
-
-    positions = checkers.convert_to_int(
-        window['-XINI-'].get(), window['-YINI-'].get(), 
-        window['-XFIM-'].get(), window['-YFIM-'].get()
-    )
-
-    pt1 = positions[:2]
-    pt2 = positions[2:]
+    pt1 = data['x_inicial'], data['y_inicial']
+    pt2 = data['x_final'], data['y_final']
 
     pt_ini = objs.Ponto(*pt1)
     pt_fim = objs.Ponto(*pt2)

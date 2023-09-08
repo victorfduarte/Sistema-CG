@@ -1,5 +1,7 @@
 import PySimpleGUI as sg
 
+window = None
+
 layout = [
     [sg.Text("Painel de Controle", font=('Arial', 18, 'bold'))],
     [sg.Frame('Objetos', layout=[
@@ -22,6 +24,7 @@ layout = [
 
 
 def create(displaylist):
+    global window
     window = sg.Window(
         "Controle", layout, font=('Arial', 12),
         finalize=True, location=(1300, 300)
@@ -32,11 +35,12 @@ def create(displaylist):
     return window
 
 
-def update(window, **updates):
+def update(**updates):
+    global window
     window['-LIST-OBJS-'].update(values=updates['list_objs'])
 
 
-def read(window, event, value, **updates):
+def read(event, value, **updates):
     if event == sg.WIN_CLOSED:
         return 'quit'
 

@@ -4,7 +4,6 @@ import PySimpleGUI as sg
 pygame.init()
 
 import windows as wd
-import checkers
 import create_objs
 
 import objetos as objs
@@ -14,10 +13,14 @@ import viewport as vp
 window = objs.Window(1.27, 0.67, 5.27, 3.67)
 viewport = vp.Viewport(window)
 
+mouse_point = objs.Ponto(0, 0)
+
+
+
 clock = pygame.time.Clock()
 
 # OBJETOS ---
-objs.displayfile.append(
+objs.displayfile.add(
     objs.Poligono(
         'Poli1',
         objs.Ponto(1, 1),
@@ -27,7 +30,7 @@ objs.displayfile.append(
     )
 )
 
-objs.displayfile.append(
+objs.displayfile.add(
     objs.Poligono(
         'Poli2',
         objs.Ponto(6.5, 3.5),
@@ -54,6 +57,19 @@ while True:
             painel.close()
             quit()
         
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_point = viewport.transform_mouse(*event.pos)
+
+            if event.button == 1:
+                objs.displayfile.add(
+                    objs.Reta(
+                        'reta',
+                        objs.Ponto(0, 0),
+                        mouse_point
+                    )
+                )
+
+        
     viewport.clean()
     
     viewport.draw(objs.displayfile)
@@ -66,11 +82,16 @@ while True:
     janela, event, value = sg.read_all_windows(timeout=clock.tick(60))
 
     if event == '__TIMEOUT__':
+        if objs.displayfile.get_status() == 'UPDATED':
+            wd.window_control.update(
+                list_objs=[obj.nome for obj in objs.displayfile]
+            )
+
         continue
 
     # Painel: Window
     if janela == painel:
-        action = wd.window_control.read(painel, event, value)
+        action = wd.window_control.read(event, value)
     
         match action:
             case 'quit':
@@ -99,19 +120,14 @@ while True:
     # Adicionar: Window
     if janela == adicionar:
         print(janela)
-        action = wd.window_adicionar.read(adicionar, event, value)
+        action = wd.window_adicionar.read(event, value)
 
-        match action:
-            case 'close':
-                adicionar.close()
+        if action == 'close':
+            adicionar.close()
             
-            case 'create-reta':
-                if reta := create_objs.create_reta(adicionar):
-                    objs.displayfile.append(reta)
+        elif action[0] == 'create-reta':
+            if reta := create_objs.create_reta(action[1]):
+                if reta == None: print('ERRO')
+                objs.displayfile.add(reta)
 
-                adicionar.close()
-
-
-        wd.window_control.update(
-            painel, list_objs=[obj.nome for obj in objs.displayfile]
-        )
+            adicionar.close()
